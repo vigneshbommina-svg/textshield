@@ -1,0 +1,237 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b1220">
+  <title>TextShield | Smart Message Analyzer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#">
+      <span class="brand-icon">🛡️</span>
+      <span>Text<span class="accent">Shield</span>
+        <small>MESSAGE SECURITY LAB</small>
+      </span>
+    </a>
+    <span class="course-tag">THEORY OF COMPUTATION PROJECT</span>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="eyebrow"><span class="live-dot"></span> RULE-BASED SECURITY ANALYZER</div>
+      <h1>Detect suspicious messages.<br><span class="gradient-text">Understand why they trigger.</span></h1>
+      <p>Analyze message patterns using regular expressions and a 32-state Deterministic Finite Automaton (DFA).</p>
+    </section>
+
+    <section class="stats-grid" aria-label="Project information">
+      <article class="stat-card">
+        <span class="stat-icon">🔎</span>
+        <div><span class="stat-label">FEATURE TYPES</span><strong>05</strong><small>Regex pattern groups</small></div>
+      </article>
+      <article class="stat-card">
+        <span class="stat-icon">⚙️</span>
+        <div><span class="stat-label">DFA STATES</span><strong>32</strong><small>All feature combinations</small></div>
+      </article>
+      <article class="stat-card">
+        <span class="stat-icon">↗</span>
+        <div><span class="stat-label">TRANSITIONS</span><strong>160</strong><small>32 states × 5 features</small></div>
+      </article>
+      <article class="stat-card">
+        <span class="stat-icon">🧠</span>
+        <div><span class="stat-label">EXPLANATIONS</span><strong>On</strong><small>Rules shown for each result</small></div>
+      </article>
+    </section>
+
+    <section class="workspace">
+      <article class="panel input-panel">
+        <div class="panel-heading">
+          <div>
+            <span class="section-number">01 / INPUT</span>
+            <h2>Message Analyzer</h2>
+          </div>
+          <span class="pill">READY</span>
+        </div>
+        <label for="messageInput">Paste a message to inspect</label>
+        <textarea id="messageInput" maxlength="5000" placeholder="Example: Urgent! Your account is blocked. Verify your password immediately..."></textarea>
+        <div class="input-meta"><span id="charCount">0 / 5000 characters</span><span>Analysis runs locally in your browser</span></div>
+
+        <div class="button-row">
+          <button id="analyzeBtn" class="btn btn-primary">Analyze Message <span>→</span></button>
+          <button id="clearBtn" class="btn btn-secondary">Clear</button>
+        </div>
+
+        <div class="examples">
+          <h3>Try a sample</h3>
+          <div class="sample-buttons">
+            <button class="sample-btn" data-sample="phishing">⚠️ Phishing example</button>
+            <button class="sample-btn" data-sample="spam">🎁 Spam example</button>
+            <button class="sample-btn" data-sample="normal">✓ Normal example</button>
+            <button class="sample-btn" data-sample="link">🔗 Link example</button>
+          </div>
+        </div>
+        <p class="privacy-note">🔒 Your message is processed in this browser. This demo does not send it to a server.</p>
+      </article>
+
+      <article class="panel result-panel" aria-live="polite">
+        <div class="panel-heading">
+          <div>
+            <span class="section-number">02 / ANALYSIS</span>
+            <h2>Detection Results</h2>
+          </div>
+          <span id="resultBadge" class="result-badge neutral">NOT ANALYZED</span>
+        </div>
+
+        <div id="resultEmpty" class="empty-state">
+          <div class="empty-illustration">⌕</div>
+          <h3>Waiting for a message</h3>
+          <p>Enter text and select Analyze Message to see the detected features, explanation, and final DFA state.</p>
+        </div>
+
+        <div id="resultContent" hidden>
+          <div id="resultBanner" class="result-banner">
+            <span id="resultSymbol" class="result-symbol">!</span>
+            <div>
+              <h3 id="resultTitle">Analysis complete</h3>
+              <p id="resultSummary"></p>
+            </div>
+          </div>
+
+          <div class="result-metrics">
+            <div class="metric-box"><span>FINAL STATE</span><strong id="finalState">q0</strong></div>
+            <div class="metric-box"><span>BIT MASK</span><strong id="finalBits">00000</strong></div>
+            <div class="metric-box"><span>FEATURES FOUND</span><strong id="featureCount">0 / 5</strong></div>
+          </div>
+
+          <h3 class="subheading">Detected features</h3>
+          <div id="featureList" class="feature-list"></div>
+
+          <h3 class="subheading">Why this result?</h3>
+          <ul id="explanationList" class="explanation-list"></ul>
+
+          <p class="disclaimer">TextShield identifies predefined patterns. A warning is not proof of a scam, and no warning does not guarantee safety.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel dfa-panel">
+      <div class="panel-heading">
+        <div>
+          <span class="section-number">03 / THEORY OF COMPUTATION</span>
+          <h2>Interactive DFA Simulator</h2>
+          <p class="panel-description">Follow each detected feature and see how the state remembers the complete combination.</p>
+        </div>
+        <span class="pill purple-pill">32 STATES</span>
+      </div>
+
+      <div class="dfa-summary">
+        <div><span class="mini-label">INITIAL STATE</span><strong>q0 · 00000</strong></div>
+        <div><span class="mini-label">CURRENT STATE</span><strong id="simState">q0 · 00000</strong></div>
+        <div><span class="mini-label">DFA RESULT</span><strong id="simResult">Not evaluated</strong></div>
+      </div>
+
+      <div class="bit-legend">
+        <span class="legend-chip urgency">U = Urgency · 1</span>
+        <span class="legend-chip credential">C = Credentials · 2</span>
+        <span class="legend-chip action">A = Action · 4</span>
+        <span class="legend-chip url">L = URL · 8</span>
+        <span class="legend-chip promo">P = Promotion · 16</span>
+      </div>
+
+      <div class="transition-area">
+        <h3>State transition path</h3>
+        <p id="pathHint" class="muted">Analyze a message to populate its DFA path.</p>
+        <div id="transitionPath" class="transition-path">
+          <div class="path-node active-node"><strong>q0</strong><span>00000</span><small>START</small></div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="transition-table">
+          <caption>Transitions used for this message</caption>
+          <thead>
+            <tr><th>From state</th><th>Input feature</th><th>Calculation</th><th>To state</th></tr>
+          </thead>
+          <tbody id="transitionTableBody">
+            <tr><td colspan="4" class="table-empty">Transitions will appear here after analysis.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="formal-box">
+        <h3>Formal definition: DFA 5-tuple</h3>
+        <p class="formula">M = (Q, Σ, δ, q₀, F)</p>
+        <div class="formal-grid">
+          <div><strong>Q</strong><p>{q₀, q₁, …, q₃₁}, all 32 states.</p></div>
+          <div><strong>Σ</strong><p>{U, C, A, L, P}, the five feature symbols.</p></div>
+          <div><strong>δ</strong><p>δ(qₘ, x) = q₍ₘ OR b(x)₎.</p></div>
+          <div><strong>q₀</strong><p>Initial state, bit mask 00000.</p></div>
+          <div class="formal-wide"><strong>F</strong><p>States where C AND (U OR A OR L) are present. These states satisfy the demo's phishing-pattern rule.</p></div>
+        </div>
+        <p class="muted small">The bit string is displayed in P-L-A-C-U order. Each new feature sets its bit to 1; existing bits remain set.</p>
+      </div>
+    </section>
+
+    <section class="bottom-grid">
+      <article class="panel">
+        <span class="section-number">04 / RECENT ACTIVITY</span>
+        <div class="history-heading"><h2>Analysis History</h2><button id="clearHistoryBtn" class="text-button">Clear history</button></div>
+        <p class="panel-description">Recent analyses from this page session.</p>
+        <div id="historyList" class="history-list"><p class="muted">No messages analyzed yet.</p></div>
+      </article>
+      <article class="panel">
+        <span class="section-number">05 / PROJECT NOTES</span>
+        <h2>How TextShield works</h2>
+        <ol class="steps-list">
+          <li><span>1</span><div><strong>Read the message</strong><p>The user enters text into the analyzer.</p></div></li>
+          <li><span>2</span><div><strong>Match regular expressions</strong><p>Predefined rules detect the five feature types.</p></div></li>
+          <li><span>3</span><div><strong>Update the DFA state</strong><p>Bitwise OR combines all detected features into one of 32 states.</p></div></li>
+          <li><span>4</span><div><strong>Explain the output</strong><p>The accepting rule and extra classification rules produce the result and explanation.</p></div></li>
+        </ol>
+      </article>
+    </section>
+
+    <footer class="footer">
+      <div class="brand footer-brand"><span class="brand-icon">🛡️</span><span>Text<span class="accent">Shield</span></span></div>
+      <p>Educational project · Theory of Computation · Regular Expressions & DFA</p>
+      <p class="muted small">Rule-based demonstration only — not a production security service.</p>
+    </footer>
+    
+<section class="dfa-visualizer">
+  <div class="dfa-heading">
+    <div>
+      <p class="dfa-label">THEORY OF COMPUTATION</p>
+      <h2>Interactive DFA State Graph</h2>
+      <p>Follow how each detected feature changes the DFA state.</p>
+    </div>
+    <button id="runDFAButton" type="button">Show DFA Path</button>
+  </div>
+
+  <div id="dfaGraph" class="dfa-graph">
+    <p>Analyze a message, then click "Show DFA Path".</p>
+  </div>
+
+  <div class="dfa-details">
+    <h3>State Transition Path</h3>
+    <p id="dfaPath">Waiting for analysis...</p>
+    <p id="dfaCurrentState">Current state: q0</p>
+    <p id="dfaStateMeaning">
+      q0 means that no warning features have been detected.
+    </p>
+  </div>
+
+  <div class="dfa-legend">
+    <span><i class="legend-dot initial-dot"></i> Initial state</span>
+    <span><i class="legend-dot normal-dot"></i> Intermediate state</span>
+    <span><i class="legend-dot active-dot"></i> Current state</span>
+    <span><i class="legend-dot accept-dot"></i> Accepting state</span>
+  </div>
+</section>
+</main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="script.js"></script>
+</body>
+</html>
